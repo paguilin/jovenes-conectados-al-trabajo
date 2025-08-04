@@ -1,0 +1,135 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4rem 2rem;
+  animation: fadeUp 0.8s ease-in;
+}
+
+.hero {
+  background: radial-gradient(circle at top left, #00f0ff33, transparent 60%);
+  padding: 3rem;
+  text-align: center;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 14px rgba(0, 198, 255, 0.2);
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #00f0ff;
+  margin-bottom: 1rem;
+  animation: fadeUp 1s ease forwards;
+}
+
+.lead {
+  font-size: 1.4rem;
+  color: #c5d5da;
+  max-width: 640px;
+  margin: 0 auto;
+  animation: fadeUp 1s ease 0.2s forwards;
+}
+
+.section p {
+  font-size: 1.2rem;
+  color: #e3f2f9;
+  margin: 1.2rem auto;
+  max-width: 700px;
+  text-align: center;
+  animation: fadeUp 0.6s ease 0.4s forwards;
+}
+
+/* Animación */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.credits {
+  font-size: 0.9rem;
+  color: #a3b5c1;
+  text-align: center;
+  margin-top: 3rem;
+  padding: 1rem;
+  opacity: 0.8;
+  animation: fadeUp 1s ease 0.6s forwards;
+}
+
+.credits strong {
+  color: #00f0ff;
+}
+
+.credits em {
+  color: #00bcd4;
+  font-style: italic;
+}
+
+.signature {
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  color: #8fb6c3;
+  font-style: italic;
+  opacity: 0.75;
+}
+
+.techStack {
+  margin-top: 2rem;
+  text-align: center;
+  color: #8fb6c3;
+  font-size: 0.85rem;
+}
+
+.logoRow {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.logoRow img {
+  height: 28px;
+  opacity: 0.85;
+  transition: transform 0.2s ease-in-out;
+}
+
+.logoRow img:hover {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+.visionSection {
+  margin-top: 3rem;
+  text-align: center;
+  color: #444;
+}
+
+.visionSection h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+  color: #396b5b;
+}
+
+.visionSection p {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.visionSection ul {
+  list-style: none;
+  padding: 0;
+}
+
+.visionSection li {
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
