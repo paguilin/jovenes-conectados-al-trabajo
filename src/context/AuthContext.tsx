@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";
-import { auth } from "@/firebase/config";
+import { auth } from "../firebase/config";
 
 // Define la estructura del contexto
 interface AuthContextType {

@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { db } from '@config';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import Image from 'next/image';
 
 type PerfilCandidato = {
@@ -12,6 +13,8 @@ type PerfilCandidato = {
   slug: string;
   cvUrl?: string;
   imagenes?: string[];
+  galeria?: string[];
+  
 };
 
 export default function VistaPerfilSlug() {
@@ -23,13 +26,13 @@ export default function VistaPerfilSlug() {
     const cargarPerfil = async () => {
       if (!slug) return;
       try {
-        const q = query(collection(db, 'perfilCandidatos'), where('slug', '==', slug));
-        const docs = await getDocs(q);
-        if (!docs.empty) {
-          setPerfil(docs.docs[0].data() as PerfilCandidato);
+        const ref = doc(db, 'perfilCandidatos', decodeURIComponent(slug));
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          setPerfil(snap.data() as PerfilCandidato);
         }
       } catch (err) {
-        console.error('Error al buscar perfil por slug:', err);
+        console.error('Error al obtener perfil:', err);
       } finally {
         setLoading(false);
       }
@@ -47,10 +50,13 @@ export default function VistaPerfilSlug() {
 
   if (!perfil) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
+      <main className="min-h-screen flex flex-col items-center justify-center gap-6 text-center">
         <p className="text-red-400 text-xl font-semibold">
-          ❌ No se encontró ningún perfil con el slug <span className="text-white">"{slug}"</span>
+          ❌ No se encontró ningún perfil con el correo <span className="text-white">"{slug}"</span>
         </p>
+        <Link href="/explorar" className="underline text-blue-400 hover:text-blue-300 transition">
+          ← Volver a explorar talentos
+        </Link>
       </main>
     );
   }

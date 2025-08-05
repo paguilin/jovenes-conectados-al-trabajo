@@ -1,0 +1,18 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/api/auth/[...nextauth]/route": "/api/auth/[...nextauth]",
+  "/favicon.ico/route": "/favicon.ico",
+  "/api/cliente/page": "/api/cliente",
+  "/conocenos/page": "/conocenos",
+  "/dashboard/perfil/[slug]/page": "/dashboard/perfil/[slug]",
+  "/dashboard/page": "/dashboard",
+  "/explorar/[slug]/page": "/explorar/[slug]",
+  "/dashboard/perfil/page": "/dashboard/perfil",
+  "/explorar/page": "/explorar",
+  "/perfil/[id]/page": "/perfil/[id]",
+  "/login/page": "/login",
+  "/page": "/",
+  "/propietario/page": "/propietario",
+  "/registro/page": "/registro",
+  "/recuperar/page": "/recuperar"
+}

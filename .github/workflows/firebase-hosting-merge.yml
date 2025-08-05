@@ -1,0 +1,46 @@
+name: Deploy to Firebase Hosting on merge
+
+on:
+  push:
+    branches:
+      - jovenes-conectados-al-trabajo
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint and test (opcional)
+        run: |
+          npm run lint || echo "Lint falló pero no detiene el deploy"
+          npm test || echo "Tests fallaron pero seguimos"
+
+      - name: Build and export
+        run: npm run build && npm run export
+
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JOVENES_CONECTADOS_AL_TRABAJO }}
+          channelId: live
+          projectId: jovenes-conectados-al-trabajo

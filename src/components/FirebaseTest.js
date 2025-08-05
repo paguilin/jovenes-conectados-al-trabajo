@@ -8,8 +8,14 @@ const FirebaseTest = () => {
       try {
         const querySnapshot = await getDocs(collection(db, "test")); // Usa tu colección
         console.log("📦 Documentos obtenidos:");
+
         querySnapshot.forEach((doc) => {
-          console.log(doc.id, "=>", doc.data());
+          const data = doc.data();
+          if (data) {
+            console.log(doc.id, "=>", data);
+          } else {
+            console.warn(`⚠️ Documento vacío o corrupto: ${doc.id}`);
+          }
         });
       } catch (error) {
         console.error("🔥 Error al conectar con Firestore:", error);

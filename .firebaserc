@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "jovenes-conectados-al-trabajo"
+  },
+  "targets": {
+    "jovenes-conectados-al-trabajo": {
+      "hosting": {
+        "backupSite": [
+          "backup-dashboard"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

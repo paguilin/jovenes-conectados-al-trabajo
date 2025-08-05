@@ -1,5 +1,7 @@
 'use client';
 
-export default function ClientOnly({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+import SessionWrapper from '../components/SessionWrapper';
+
+export default function ClientLayout({ children }: { children: React.ReactNode }) {
+  return <SessionWrapper>{children}</SessionWrapper>;
 }

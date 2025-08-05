@@ -1,17 +1,18 @@
-import type { NextConfig } from 'next';
 import path from 'path';
 
-const nextConfig: NextConfig = {
- 
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'standalone', // ✅ Necesario para deploy en Cloud Functions v2
+
   eslint: {
-    ignoreDuringBuilds: true, // ✅ Ignora warnings de ESLint en build
+    ignoreDuringBuilds: true,
   },
   webpack: (config) => {
     config.resolve.alias['@components'] = path.resolve(__dirname, 'src/components');
     return config;
   },
   images: {
-    domains: ['firebasestorage.googleapis.com'], // ✅ Permite imágenes externas desde Firebase Storage
+    domains: ['firebasestorage.googleapis.com'],
   },
 };
 

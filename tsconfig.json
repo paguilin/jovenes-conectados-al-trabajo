@@ -17,15 +17,14 @@
 
     "baseUrl": "src",
     "paths": {
-      "@/*": ["*"],
+      "@/*": ["*"],                   
       "@components/*": ["components/*"],
       "@pages/*": ["pages/*"],
+      "@firebase/*": ["firebase/*"],   // 
       "@config": ["firebase/config"],
       "@auth": ["firebase/authService"],
       "@registro": ["firebase/registro"],
-      "@firestore": ["firebase/firestoreService"],
-      "@firebase/config": ["firebase/config"],
-      "@firebase/firestoreService": ["firebase/firestoreService"]
+      "@firestore": ["firebase/firestoreService"]
     },
 
     "plugins": [{ "name": "next" }]

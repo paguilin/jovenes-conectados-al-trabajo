@@ -33,7 +33,7 @@ export default function Conocenos() {
 
       <footer className={styles.credits}>
         <p>
-          Creada por <strong>Jesus Bladimir Ortiz Reyes</strong> con la ayuda de Gerardo Rodriguez, Javier Baxin, Yesenia Guadalupe, Alejandro Rueda, y <em>invitado especial</em>: Erik Alvarado.
+          Creada por <strong>Jesus Bladimir Ortiz Reyes</strong> con la ayuda de Gerardo Rodriguez, Javier Baxin, Yesenia Guadalupe, Alejandro Rueda.
         </p>
         <p className={styles.signature}>
           Hecho con tecnologías limpias, pensadas para no dañar tanto al mundo 🌎

@@ -10,20 +10,34 @@ type PerfilCandidato = {
   slug: string;
   bio: string;
   imagenes?: string[];
+  skills?: string[];
+  galeria?: string[];
 };
+
+const SKILLS_PREDEFINIDAS = [
+  'Next.js',
+  'Firebase',
+  'UI/UX',
+  'React',
+  'TypeScript',
+  'Figma',
+  'Tailwind',
+];
 
 export default function ExplorarGeneral() {
   const [perfiles, setPerfiles] = useState<PerfilCandidato[]>([]);
   const [loading, setLoading] = useState(true);
+  const [skillFiltro, setSkillFiltro] = useState('');
 
   useEffect(() => {
     const cargarPerfiles = async () => {
       try {
         const snap = await getDocs(collection(db, 'perfilCandidatos'));
-        const data: PerfilCandidato[] = snap.docs
-          .map((doc) => doc.data())
-          .filter((p) => p.slug) as PerfilCandidato[];
-        setPerfiles(data);
+        const rawData = snap.docs.map((doc) => doc.data());
+        const perfilesValidos = rawData.filter(
+          (p): p is PerfilCandidato => !!p && typeof p.slug === 'string'
+        );
+        setPerfiles(perfilesValidos);
       } catch (err) {
         console.error('Error al cargar perfiles:', err);
       } finally {
@@ -33,6 +47,10 @@ export default function ExplorarGeneral() {
     cargarPerfiles();
   }, []);
 
+  const perfilesFiltrados = skillFiltro
+    ? perfiles.filter((p) => p.skills?.includes(skillFiltro))
+    : perfiles;
+
   if (loading) {
     return (
       <main className="min-h-screen flex items-center justify-center">
@@ -41,15 +59,50 @@ export default function ExplorarGeneral() {
     );
   }
 
+  if (perfiles.length === 0) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-400 text-lg">📭 Aún no hay talentos registrados.</p>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen px-6 py-10 bg-[#0f2027] text-white">
-      <div className="max-w-5xl mx-auto space-y-8">
+      <div id="explorar-lista" className="max-w-5xl mx-auto space-y-8">
         <h1 className="text-4xl font-bold text-center text-[#00f0ff]">Explorar Talentos</h1>
 
+        {/* 🧠 Lista de skills tipo botones */}
+        <div className="flex flex-wrap gap-3 justify-center">
+          {SKILLS_PREDEFINIDAS.map((skill) => (
+            <button
+              key={skill}
+              onClick={() => setSkillFiltro(skill === skillFiltro ? '' : skill)}
+              className={`px-4 py-2 rounded-full border ${
+                skillFiltro === skill
+                  ? 'bg-[#00f0ff] text-black font-bold'
+                  : 'border-[#00f0ff] text-[#00f0ff]'
+              } transition`}
+            >
+              {skill}
+            </button>
+          ))}
+        </div>
+
+        {/* 📊 Conteo total según filtro */}
+        <p className="text-center text-gray-300">
+          Hay{' '}
+          <span className="text-[#00f0ff] font-semibold">
+            {perfilesFiltrados.length}
+          </span>{' '}
+          talento{perfilesFiltrados.length !== 1 ? 's' : ''}{' '}
+          {skillFiltro ? `con la skill "${skillFiltro}"` : 'registrado'}.
+        </p>
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {perfiles.map((p, i) => (
+          {perfilesFiltrados.map((p, i) => (
             <Link
-              href={`/explorar/${p.slug}`}
+              href={`/explorar/${encodeURIComponent(p.slug)}`}
               key={i}
               className="bg-[#1c1f26] p-4 rounded-xl shadow-lg hover:ring-2 ring-[#00f0ff] transition"
             >
@@ -69,7 +122,7 @@ export default function ExplorarGeneral() {
                 )}
                 <h2 className="text-xl font-semibold text-[#00f0ff]">{p.slug}</h2>
                 <p className="text-sm text-gray-300">
-                  {p.bio.length > 120 ? p.bio.slice(0, 120) + '...' : p.bio}
+                  {p.bio?.slice(0, 120) ?? ''}{p.bio.length > 120 ? '...' : ''}
                 </p>
               </div>
             </Link>
