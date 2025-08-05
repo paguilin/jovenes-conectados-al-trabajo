@@ -6,17 +6,20 @@ import { useRouter } from 'next/navigation';
 import { obtenerFotoPerfil, guardarFotoPerfil } from '../../firebase/perfil';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '@/firebase/config';
-import { enableNetwork, doc, getDoc } from 'firebase/firestore';
+import { enableNetwork, clearIndexedDbPersistence, doc, getDoc } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import AvatarUpload from '@/components/AvatarUpload';
+;
 
 type PerfilCandidato = {
   bio: string;
   videoUrl: string;
   cvUrl: string;
   imagenes: string[];
+  galeria?: string[];
+  skills?: string[];
 };
 
 export default function DashboardPage() {
@@ -30,6 +33,7 @@ export default function DashboardPage() {
   const [faltantes, setFaltantes] = useState<string[]>([]);
   const [subiendo, setSubiendo] = useState(false);
   const [archivos, setArchivos] = useState<{ url: string; tipo: string }[]>([]);
+  const [galeriaGuardada, setGaleriaGuardada] = useState<string[]>([]);
 
   useEffect(() => {
     if (status === 'unauthenticated') router.push('/');
@@ -40,33 +44,51 @@ export default function DashboardPage() {
 
     (async () => {
       try {
+        await clearIndexedDbPersistence(db);
         await enableNetwork(db);
+        console.log('✅ Firestore reconectado');
+
         const url = await obtenerFotoPerfil(email);
         if (url) setFotoUrl(url);
 
-        const snap = await getDoc(doc(db, 'perfilCandidatos', email));
-        if (!snap.exists()) return;
+        const ref = doc(db, 'perfilCandidatos', email);
+        const snap = await getDoc(ref);
+
+        if (!snap.exists()) {
+          console.warn('Perfil no encontrado para:', email);
+          return;
+        }
 
         const data = snap.data() as PerfilCandidato;
         setPerfil(data);
+        setGaleriaGuardada(data.galeria || []);
 
-        const campos: (keyof PerfilCandidato)[] = ['bio', 'videoUrl', 'cvUrl', 'imagenes'];
-        let done = 0;
-        const missing: string[] = [];
+        const camposClave: { campo: string; valor: any }[] = [
+          { campo: 'bio', valor: data.bio },
+          { campo: 'videoUrl', valor: data.videoUrl },
+          { campo: 'cvUrl', valor: data.cvUrl },
+          { campo: 'imagenes', valor: data.imagenes },
+          { campo: 'galeria', valor: data.galeria },
+          { campo: 'skills', valor: data.skills },
+          { campo: 'avatarUrl', valor: fotoUrl },
+        ];
 
-        campos.forEach((c) => {
-          const val = data[c];
+        let completos = 0;
+        const faltanCampos: string[] = [];
+
+        camposClave.forEach(({ campo, valor }) => {
           const ok =
-            c === 'imagenes'
-              ? Array.isArray(val) && val.length > 0
-              : typeof val === 'string' && val.trim().length > 0;
-          ok ? done++ : missing.push(c);
+            Array.isArray(valor) ? valor.length > 0 :
+            typeof valor === 'string' ? valor.trim().length > 0 :
+            false;
+          ok ? completos++ : faltanCampos.push(campo);
         });
 
-        setProgreso(Math.round((done / campos.length) * 100));
-        setFaltantes(missing);
-      } catch (error: unknown) {
-        console.error('Error al cargar datos del perfil:', (error as Error).message);
+        setProgreso(Math.round((completos / camposClave.length) * 100));
+        setFaltantes(faltanCampos);
+      } catch (error: any) {
+        console.error('❌ Error al obtener datos del perfil:', error?.message || error);
+        toast.error('Firestore está desconectado. Revisa tu red o recarga 🔌');
       }
     })();
   }, [email]);
@@ -192,7 +214,7 @@ export default function DashboardPage() {
                   ) : (
                     <div className="flex flex-col items-center text-center">
                       <span className="text-[#00f0ff] text-2xl">📄</span>
-                      <span className="text-xs text-white mt-2">Documento #{i + 1}</span>
+                                            <span className="text-xs text-white mt-2">Documento #{i + 1}</span>
                     </div>
                   )}
                 </div>
@@ -209,10 +231,9 @@ export default function DashboardPage() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => router.push(`/perfil/${email.split('@')[0]}`)}
+          onClick={() => router.push(`/perfil/${email}`)}
           className="w-full py-3 rounded-md bg-gradient-to-r from-[#00c6ff] via-[#0072ff] to-[#00c6ff] text-black font-semibold shadow-md hover:brightness-125 transition duration-300 text-center"
         >
-                 
           🚀 Explorar perfil como visitante
         </motion.button>
 
