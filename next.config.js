@@ -2,7 +2,7 @@ const path = require('path');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone', // ✅ Soporte para SSR y rutas dinámicas en Firebase Functions
+  output: 'export', // ✅ Soporte para SSR y rutas dinámicas en Firebase Functions
 
   reactStrictMode: true,
 
