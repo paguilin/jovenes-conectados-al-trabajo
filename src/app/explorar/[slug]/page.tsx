@@ -1,18 +1,10 @@
-import { collection, getDocs, doc, getDoc, enableNetwork } from 'firebase/firestore'
-import { db } from '@config'
-import Image from 'next/image'
-import Link from 'next/link'
-
-// ✅ Esta función corre en el servidor durante el build
-export async function generateStaticParams() {
-  const snapshot = await getDocs(collection(db, 'perfilCandidatos'))
-  const slugs = snapshot.docs.map(doc => ({ slug: doc.id }))
-  return slugs
-}
-
 'use client'
 
 import { useEffect, useState } from 'react'
+import { doc, getDoc, enableNetwork } from 'firebase/firestore'
+import { db } from '@config'
+import Image from 'next/image'
+import Link from 'next/link'
 
 type PerfilCandidato = {
   bio: string
