@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { enableNetwork } from 'firebase/firestore';
-import { db } from '@/firebase/config';
+import { db } from '../firebase/config';
 
 export default function ActivarFirestore() {
   useEffect(() => {

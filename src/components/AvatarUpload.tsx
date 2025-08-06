@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { doc, updateDoc } from 'firebase/firestore';
-import { storage, db } from '@/firebase/config';
+import { storage, db } from '../firebase/config';
 import { useSession } from 'next-auth/react';
 
 export default function AvatarUpload() {

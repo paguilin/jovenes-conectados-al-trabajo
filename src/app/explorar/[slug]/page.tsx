@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { doc, getDoc, enableNetwork } from 'firebase/firestore';
-import { db } from '@config'; // ✅ ¡Alias corregido aquí!
+import { db } from '@config'
 import Image from 'next/image';
 import Link from 'next/link';
+
+console.log('DB:', db)
 
 type PerfilCandidato = {
   bio: string;
