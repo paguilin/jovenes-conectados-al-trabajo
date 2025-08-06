@@ -1,51 +1,57 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { doc, getDoc, enableNetwork } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, enableNetwork } from 'firebase/firestore'
 import { db } from '@config'
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from 'next/image'
+import Link from 'next/link'
 
-console.log('DB:', db)
+// ✅ Esta función corre en el servidor durante el build
+export async function generateStaticParams() {
+  const snapshot = await getDocs(collection(db, 'perfilCandidatos'))
+  const slugs = snapshot.docs.map(doc => ({ slug: doc.id }))
+  return slugs
+}
+
+'use client'
+
+import { useEffect, useState } from 'react'
 
 type PerfilCandidato = {
-  bio: string;
-  videoUrl: string;
-  slug: string;
-  cvUrl?: string;
-  imagenes?: string[];
-  galeria?: string[];
-};
+  bio: string
+  videoUrl: string
+  slug: string
+  cvUrl?: string
+  imagenes?: string[]
+  galeria?: string[]
+}
 
 type Props = {
-  params: { slug: string };
-};
+  params: { slug: string }
+}
 
 export default function VistaPerfilSlug({ params }: Props) {
-  const [perfil, setPerfil] = useState<PerfilCandidato | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [perfil, setPerfil] = useState<PerfilCandidato | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchPerfil = async () => {
       try {
-        await enableNetwork(db);
-        const ref = doc(db, 'perfilCandidatos', decodeURIComponent(params.slug));
-        const snap = await getDoc(ref);
+        await enableNetwork(db)
+        const ref = doc(db, 'perfilCandidatos', decodeURIComponent(params.slug))
+        const snap = await getDoc(ref)
 
         if (!snap.exists()) {
-          setError(`❌ No se encontró ningún perfil con el ID "${params.slug}"`);
-          return;
+          setError(`❌ No se encontró ningún perfil con el ID "${params.slug}"`)
+          return
         }
 
-        setPerfil(snap.data() as PerfilCandidato);
+        setPerfil(snap.data() as PerfilCandidato)
       } catch (err) {
-        console.error('Error al cargar el perfil:', err);
-        setError('❌ Error al conectar con Firestore.');
+        console.error('Error al cargar el perfil:', err)
+        setError('❌ Error al conectar con Firestore.')
       }
-    };
+    }
 
-    fetchPerfil();
-  }, [params.slug]);
+    fetchPerfil()
+  }, [params.slug])
 
   if (error) {
     return (
@@ -55,11 +61,11 @@ export default function VistaPerfilSlug({ params }: Props) {
           ← Volver a explorar talentos
         </Link>
       </main>
-    );
+    )
   }
 
   if (!perfil) {
-    return <p className="text-white text-center mt-10">⏳ Cargando perfil...</p>;
+    return <p className="text-white text-center mt-10">⏳ Cargando perfil...</p>
   }
 
   return (
@@ -117,5 +123,5 @@ export default function VistaPerfilSlug({ params }: Props) {
         )}
       </div>
     </main>
-  );
+  )
 }
