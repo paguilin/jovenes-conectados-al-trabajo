@@ -3,7 +3,7 @@ name: Deploy to Firebase Hosting
 on:
   push:
     branches:
-      - master  # O el nombre de tu rama principal
+   - jovenes-conectados-al-trabajo  # O el nombre de tu rama principal
 
 jobs:
   build:

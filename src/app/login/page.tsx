@@ -3,7 +3,7 @@
 import { signIn } from 'next-auth/react';
 import { useState, Suspense } from 'react';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 function LoginForm() {
@@ -12,6 +12,7 @@ function LoginForm() {
   const [errorMessage, setErrorMessage] = useState('');
   const searchParams = useSearchParams();
   const urlError = searchParams?.get('error');
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,8 +28,8 @@ function LoginForm() {
 
     if (result?.error) {
       setErrorMessage('Credenciales incorrectas. Intenta de nuevo.');
-    } else if (result?.ok && result?.url) {
-      window.location.href = result.url;
+    } else if (result?.ok) {
+      router.push('/dashboard'); // ✅ redirección automática
     }
   };
 

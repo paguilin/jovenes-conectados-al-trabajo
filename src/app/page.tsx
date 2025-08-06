@@ -17,20 +17,20 @@ export default function Home() {
           Esta es la plataforma de jóvenes conectados al trabajo. Inicia sesión para acceder a tu perfil y explorar oportunidades que transforman tu futuro.
         </p>
 
-        <div className="flex flex-col sm:flex-row justify-center gap-4 mt-6">
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6">
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
             <Link
               href="/login"
-              className="inline-block bg-[#00f0ff] text-black font-semibold py-3 px-6 rounded-xl shadow-md hover:bg-[#00e5ff] transition duration-300 text-lg"
+              className="block mx-auto bg-[#00f0ff] text-black font-semibold py-3 px-6 rounded-xl shadow-md hover:bg-[#00e5ff] transition duration-300 text-lg text-center"
             >
               🔐 Iniciar sesión
             </Link>
           </motion.div>
 
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
             <Link
               href="/conocenos"
-              className="inline-block bg-transparent border border-[#00f0ff] text-[#00f0ff] font-semibold py-3 px-6 rounded-xl shadow-md hover:bg-[#00f0ff22] transition duration-300 text-lg"
+              className="block mx-auto bg-transparent border border-[#00f0ff] text-[#00f0ff] font-semibold py-3 px-6 rounded-xl shadow-md hover:bg-[#00f0ff22] transition duration-300 text-lg text-center"
             >
               💡 Conócenos
             </Link>

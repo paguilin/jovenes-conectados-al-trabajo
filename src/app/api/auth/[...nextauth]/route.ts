@@ -1,10 +1,37 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { initializeApp, getApps } from 'firebase/app';
+import { FirebaseOptions } from 'firebase/app';
 
-const mockUsers = [
-  { id: '1', name: 'Admin', username: 'admin', email: 'admin@example.com', password: '1234' },
-  { id: '2', name: 'Test', username: 'testuser', email: 'test@example.com', password: '5678' },
-];
+// 🔧 Configuración de Firebase con tus datos reales
+const firebaseConfig: FirebaseOptions = {
+  apiKey: 'AIzaSyBX3P_H9A-iYbriR4Ma7-y3WaLNhSKj3_0',
+  authDomain: 'jovenes-conectados-al-trabajo.firebaseapp.com',
+  projectId: 'jovenes-conectados-al-trabajo',
+  storageBucket: 'jovenes-conectados-al-trabajo.appspot.com',
+  messagingSenderId: '449609958507',
+  appId: '1:449609958507:web:7d87a016a233559fb41d2e',
+};
+
+// 🧠 Evita inicializar Firebase más de una vez
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const db = getFirestore(app);
+
+// 🧪 Usuario mock para pruebas
+const mockAdmin = {
+  id: 'admin',
+  name: 'Admin',
+  username: 'admin',
+  email: 'admin@example.com',
+  password: '1234',
+};
+
+// 🔍 Obtener usuarios desde Firestore
+async function fetchUsersFromFirestore() {
+  const snapshot = await getDocs(collection(db, 'users'));
+  return snapshot.docs.map(doc => doc.data());
+}
 
 const handler = NextAuth({
   providers: [
@@ -15,10 +42,13 @@ const handler = NextAuth({
         password:   { label: 'Contraseña',        type: 'password' },
       },
       async authorize(credentials) {
-        console.log('🔐 Autorize ejecutado con:', credentials?.identifier);
         const { identifier, password } = credentials ?? {};
+        console.log('🔐 Autorize ejecutado con:', identifier);
 
-        const user = mockUsers.find(
+        const firestoreUsers = await fetchUsersFromFirestore();
+        const allUsers = [...firestoreUsers, mockAdmin];
+
+        const user = allUsers.find(
           (u) =>
             (u.email === identifier || u.username === identifier) &&
             u.password === password
@@ -26,7 +56,11 @@ const handler = NextAuth({
 
         if (user) {
           console.log('✅ Usuario autenticado:', user.email);
-          return { id: user.id, name: user.name, email: user.email };
+          return {
+            id: user.id ?? '',
+            name: user.name ?? '',
+            email: user.email ?? '',
+          };
         }
 
         console.warn('❌ Credenciales inválidas para:', identifier);
@@ -36,7 +70,7 @@ const handler = NextAuth({
   ],
   pages: {
     signIn: '/login',
-    error: '/login',
+    error:  '/login',
   },
   session: {
     strategy: 'jwt',
@@ -51,11 +85,11 @@ const handler = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      (session.user as any).id = typeof token.id === 'string' ? token.id : '';
+      (session.user as any).id = token.id ?? '';
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: 'tu-mama-en-cuatro',
 });
 
 export { handler as GET, handler as POST };

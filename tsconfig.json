@@ -15,11 +15,11 @@
     "allowJs": true,
     "incremental": true,
 
-    "baseUrl": "src", // ✅ Esto es lo que necesitabas
+    "baseUrl": "src",
     "paths": {
-      "@/*": ["app/*"],
+      "@/*": ["*"],
       "@components/*": ["components/*"],
-      "@pages/*": ["app/*"],
+      "@pages/*": ["pages/*"],
       "@firebase/*": ["firebase/*"],
       "@config": ["firebase/config"],
       "@auth": ["firebase/authService"],
