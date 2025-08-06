@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app'
+import { initializeApp, getApps, getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
@@ -13,8 +13,8 @@ const firebaseConfig = {
   appId: '1:449609958507:web:7d87a016233559fb41d2e',
 }
 
-// 🚀 Inicializar Firebase App
-const app = initializeApp(firebaseConfig)
+// ✅ Evitar inicialización duplicada
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp()
 
 // 📤 Exportar servicios de Firebase como constantes
 export const auth = getAuth(app)
