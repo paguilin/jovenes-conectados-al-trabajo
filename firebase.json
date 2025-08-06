@@ -1,19 +1,15 @@
 {
-  "functions": {
-    "source": "functions"
-  },
   "hosting": {
-    "public": "out",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "site": "jovenes-conectados-al-trabajo",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "**",
-        "destination": "/index.html"
+        "function": "nextServer"
       }
     ]
+  },
+  "functions": {
+    "source": "functions"
   }
 }

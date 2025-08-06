@@ -6,7 +6,9 @@ import { storage, db } from '@/firebase/config';
 import { useSession } from 'next-auth/react';
 
 export default function AvatarUpload() {
-  const { data: session } = useSession();
+  const sessionResult = useSession();
+  const session = sessionResult?.data;
+  const status = sessionResult?.status;
   const [uploading, setUploading] = useState(false);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {

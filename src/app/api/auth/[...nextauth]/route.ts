@@ -1,11 +1,10 @@
-import NextAuth from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
+import NextAuth from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
 
-// Simulación básica (puedes reemplazar por tu lógica real o conexión a DB)
 const mockUsers = [
   { id: '1', name: 'Admin', username: 'admin', email: 'admin@example.com', password: '1234' },
   { id: '2', name: 'Test', username: 'testuser', email: 'test@example.com', password: '5678' },
-]
+];
 
 const handler = NextAuth({
   providers: [
@@ -16,21 +15,28 @@ const handler = NextAuth({
         password:   { label: 'Contraseña',        type: 'password' },
       },
       async authorize(credentials) {
-        const { identifier, password } = credentials ?? {}
+        console.log('🔐 Autorize ejecutado con:', credentials?.identifier);
+        const { identifier, password } = credentials ?? {};
+
         const user = mockUsers.find(
           (u) =>
             (u.email === identifier || u.username === identifier) &&
             u.password === password
-        )
+        );
+
         if (user) {
-          return { id: user.id, name: user.name, email: user.email }
+          console.log('✅ Usuario autenticado:', user.email);
+          return { id: user.id, name: user.name, email: user.email };
         }
-        return null
+
+        console.warn('❌ Credenciales inválidas para:', identifier);
+        return null;
       },
     }),
   ],
   pages: {
     signIn: '/login',
+    error: '/login',
   },
   session: {
     strategy: 'jwt',
@@ -38,26 +44,18 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-   if (user) {
-  token.id    = user.id ?? ''
-  token.name  = user.name ?? ''
-  token.email = user.email ?? ''
-}
+        token.id    = user.id ?? '';
+        token.name  = user.name ?? '';
+        token.email = user.email ?? '';
       }
-      return token
+      return token;
     },
     async session({ session, token }) {
-      session.user = {
-        // preserva posibles campos legacy y luego sobreescribe
-        ...session.user,
-        id:    typeof token.id    === 'string' ? token.id    : '',
-        name:  typeof token.name  === 'string' ? token.name  : '',
-        email: typeof token.email === 'string' ? token.email : '',
-      }
-      return session
+      (session.user as any).id = typeof token.id === 'string' ? token.id : '';
+      return session;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-})
+});
 
-export { handler as GET, handler as POST }
+export { handler as GET, handler as POST };

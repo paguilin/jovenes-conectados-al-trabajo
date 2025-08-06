@@ -21,9 +21,12 @@ type PerfilCandidato = {
   galeria?: string[];
   skills?: string[];
 };
+export const dynamic ="force-dynamic";
 
 export default function DashboardPage() {
-  const { data: session, status } = useSession();
+  const sessionResult = useSession();
+  const session = sessionResult?.data;
+  const status = sessionResult?.status;
   const router = useRouter();
   const email = session?.user?.email ?? '';
 

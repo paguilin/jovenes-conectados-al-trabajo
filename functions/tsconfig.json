@@ -1,15 +1,42 @@
 {
   "compilerOptions": {
-    "target": "ES2020",                     // ✅ Mejora compatibilidad moderna
-    "module": "commonjs",                   // ✅ Para Firebase Functions (no NodeNext)
-    "moduleResolution": "node",             // ✅ Consistente con CommonJS
-    "outDir": "lib",
-    "esModuleInterop": true,
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "jsx": "preserve",
     "strict": true,
-    "sourceMap": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "skipLibCheck": true
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "allowJs": true,
+    "incremental": true,
+
+    "baseUrl": ".", 
+    "paths": {
+      "@/*": ["app/*"],
+      "@components/*": ["components/*"],
+      "@pages/*": ["app/*"],
+      "@firebase/*": ["firebase/*"],
+      "@config": ["firebase/config.ts"],
+      "@auth": ["firebase/authService.ts"],
+      "@registro": ["firebase/registro.ts"],
+      "@firestore": ["firebase/firestoreService.ts"]
+    },
+
+    "plugins": [{ "name": "next" }]
   },
-  "include": ["src"]                   // ✅ Asegúrate que esté en la ruta correcta
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    ".next"
+  ]
 }

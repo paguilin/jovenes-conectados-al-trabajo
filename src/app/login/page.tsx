@@ -6,25 +6,34 @@ import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-// 👉 Extraemos el contenido en un subcomponente para poder usar Suspense
 function LoginForm() {
-  const [identifier, setIdentifier] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const searchParams = useSearchParams();
-  const error = searchParams?.get('error');
+  const urlError = searchParams?.get('error');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await signIn('credentials', {
-      identifier,
+    setErrorMessage('');
+
+    const result = await signIn('credentials', {
+      redirect: false,
+      identifier: email,
       password,
-      callbackUrl: '/dashboard',
     });
+
+    console.log('🔍 Resultado del login:', result);
+
+    if (result?.error) {
+      setErrorMessage('Credenciales incorrectas. Intenta de nuevo.');
+    } else if (result?.ok && result?.url) {
+      window.location.href = result.url;
+    }
   };
 
   return (
     <form className="login-form" onSubmit={handleSubmit}>
-      {/* Logo centrado */}
       <div className="flex flex-col items-center mb-4">
         <Image
           src="/logo-empleo.jpeg"
@@ -41,17 +50,17 @@ function LoginForm() {
 
       <h2>Bienvenido de nuevo</h2>
 
-      {error === 'CredentialsSignin' && (
+      {(urlError === 'CredentialsSignin' || errorMessage) && (
         <p style={{ color: '#ff6b6b', marginBottom: '1rem' }}>
-          Credenciales incorrectas. Inténtalo de nuevo.
+          {errorMessage || 'Credenciales incorrectas. Inténtalo de nuevo.'}
         </p>
       )}
 
       <input
-        type="text"
-        placeholder="Correo o nombre de usuario"
-        value={identifier}
-        onChange={(e) => setIdentifier(e.target.value)}
+        type="email"
+        placeholder="Correo electrónico"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
         required
       />
       <input
@@ -82,7 +91,6 @@ function LoginForm() {
   );
 }
 
-// 👉 Componente principal con Suspense
 export default function LoginPage() {
   return (
     <div className="login-container">

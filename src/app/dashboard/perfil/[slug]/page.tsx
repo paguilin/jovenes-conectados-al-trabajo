@@ -1,3 +1,4 @@
+
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import Image from 'next/image';
@@ -14,21 +15,40 @@ interface PerfilData {
   nombre?: string;
 }
 
+export async function generateStaticParams() {
+  // 🔧 Slugs ficticios para desbloquear el build
+  return [
+    { slug: 'demo1' },
+    { slug: 'demo2' }
+  ];
+}
+
 export default async function PerfilPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
 
-  const q = query(collection(db, 'perfilCandidatos'), where('slug', '==', slug));
-  const docs = await getDocs(q);
+  let perfil: PerfilData | null = null;
 
-  if (docs.empty) {
+  try {
+    const q = query(collection(db, 'perfilCandidatos'), where('slug', '==', slug));
+    const docs = await getDocs(q);
+
+    if (docs.empty) {
+      return (
+        <main className="min-h-screen bg-[#0d1117] text-white flex items-center justify-center">
+          <p className="text-xl">❌ Perfil no encontrado</p>
+        </main>
+      );
+    }
+
+    perfil = docs.docs[0].data() as PerfilData;
+  } catch (error) {
+    console.error('Error al obtener perfil:', error);
     return (
       <main className="min-h-screen bg-[#0d1117] text-white flex items-center justify-center">
-        <p className="text-xl">❌ Perfil no encontrado</p>
+        <p className="text-xl">🚨 Error al cargar el perfil</p>
       </main>
     );
   }
-
-  const perfil = docs.docs[0].data() as PerfilData;
 
   const totalCampos = 3;
   const completados = [perfil.bio, perfil.videoUrl, perfil.cvUrl].filter(Boolean).length;
@@ -50,7 +70,9 @@ export default async function PerfilPage({ params }: { params: { slug: string } 
   return (
     <main className="min-h-screen bg-gradient-to-tr from-[#0f0c29] via-[#302b63] to-[#24243e] text-white p-6">
       <div className="max-w-3xl mx-auto space-y-6">
-        <h1 className="text-3xl font-bold text-center">🧑‍💼 Perfil profesional de {perfil.nombre || perfil.email}</h1>
+        <h1 className="text-3xl font-bold text-center">
+          🧑‍💼 Perfil profesional de {perfil.nombre || perfil.email}
+        </h1>
 
         {perfil.avatarUrl && (
           <div className="flex justify-center">
@@ -112,7 +134,7 @@ export default async function PerfilPage({ params }: { params: { slug: string } 
                 <Image
                   key={idx}
                   src={imgUrl}
-                  alt={`Imagen ${idx}`}
+                  alt={`Imagen ${idx + 1}`}
                   width={300}
                   height={200}
                   className="rounded border border-[#00f0ff] object-cover"

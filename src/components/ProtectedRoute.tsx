@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { data: session, status } = useSession()
+  const sessionResult = useSession();
+const session = sessionResult?.data;
+const status = sessionResult?.status;
   const router = useRouter()
 
   useEffect(() => {

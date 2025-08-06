@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { db } from '@config';
-import { doc, getDoc } from 'firebase/firestore';
-import { useParams } from 'next/navigation';
-import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { doc, getDoc, enableNetwork } from 'firebase/firestore';
+import { db } from '@config'; // ✅ ¡Alias corregido aquí!
 import Image from 'next/image';
+import Link from 'next/link';
 
 type PerfilCandidato = {
   bio: string;
@@ -14,46 +13,42 @@ type PerfilCandidato = {
   cvUrl?: string;
   imagenes?: string[];
   galeria?: string[];
-  
 };
 
-export default function VistaPerfilSlug() {
-  const { slug } = useParams() as { slug: string };
+type Props = {
+  params: { slug: string };
+};
+
+export default function VistaPerfilSlug({ params }: Props) {
   const [perfil, setPerfil] = useState<PerfilCandidato | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const cargarPerfil = async () => {
-      if (!slug) return;
+    const fetchPerfil = async () => {
       try {
-        const ref = doc(db, 'perfilCandidatos', decodeURIComponent(slug));
+        await enableNetwork(db);
+        const ref = doc(db, 'perfilCandidatos', decodeURIComponent(params.slug));
         const snap = await getDoc(ref);
-        if (snap.exists()) {
-          setPerfil(snap.data() as PerfilCandidato);
+
+        if (!snap.exists()) {
+          setError(`❌ No se encontró ningún perfil con el ID "${params.slug}"`);
+          return;
         }
+
+        setPerfil(snap.data() as PerfilCandidato);
       } catch (err) {
-        console.error('Error al obtener perfil:', err);
-      } finally {
-        setLoading(false);
+        console.error('Error al cargar el perfil:', err);
+        setError('❌ Error al conectar con Firestore.');
       }
     };
-    cargarPerfil();
-  }, [slug]);
 
-  if (loading) {
-    return (
-      <main className="min-h-screen flex items-center justify-center">
-        <p className="text-white text-lg animate-pulse">🔍 Cargando perfil...</p>
-      </main>
-    );
-  }
+    fetchPerfil();
+  }, [params.slug]);
 
-  if (!perfil) {
+  if (error) {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center gap-6 text-center">
-        <p className="text-red-400 text-xl font-semibold">
-          ❌ No se encontró ningún perfil con el correo <span className="text-white">"{slug}"</span>
-        </p>
+        <p className="text-red-400 text-xl font-semibold">{error}</p>
         <Link href="/explorar" className="underline text-blue-400 hover:text-blue-300 transition">
           ← Volver a explorar talentos
         </Link>
@@ -61,11 +56,16 @@ export default function VistaPerfilSlug() {
     );
   }
 
+  if (!perfil) {
+    return <p className="text-white text-center mt-10">⏳ Cargando perfil...</p>;
+  }
+
   return (
     <main className="min-h-screen px-6 py-10 text-white bg-[#0f2027]">
       <div className="max-w-3xl mx-auto space-y-8">
-        <h1 className="text-3xl font-bold text-[#00f0ff] text-center">Perfil de {perfil.slug}</h1>
-
+        <h1 className="text-3xl font-bold text-[#00f0ff] text-center">
+          Perfil de {perfil.slug}
+        </h1>
         <p className="text-lg">{perfil.bio}</p>
 
         {perfil.videoUrl && (
@@ -96,7 +96,7 @@ export default function VistaPerfilSlug() {
           </div>
         )}
 
-        {perfil.imagenes?.length && (
+        {Array.isArray(perfil.imagenes) && perfil.imagenes.length > 0 && (
           <div>
             <h2 className="text-xl font-semibold text-[#00f0ff] mb-2">🖼️ Imágenes</h2>
             <div className="grid grid-cols-2 gap-4">
